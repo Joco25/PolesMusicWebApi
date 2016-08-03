@@ -54,7 +54,7 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', 'http://sql8.freesqldatabase.com/'),
+            'host' => env('DB_HOST', 'sql8.freesqldatabase.com'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'sql8129892'),
             'username' => env('DB_USERNAME', 'sql8129892'),
