@@ -6,6 +6,7 @@ use JWTAuth;
 use Validator;
 use Config;
 use App\User;
+use App\Artist;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Message;
 use Dingo\Api\Routing\Helpers;
@@ -47,26 +48,65 @@ class AuthController extends Controller
         $signupFields = Config::get('boilerplate.signup_fields');
         $hasToReleaseToken = Config::get('boilerplate.signup_token_release');
 
-        $userData = $request->only($signupFields);
+        if(isset($request->is_artist)){
+            //If new account is an artist
+            $credentials = $request->only('stage_name', 'description');
 
-        $validator = Validator::make($userData, Config::get('boilerplate.signup_fields_rules'));
+            $validator = Validator::make($credentials, [
+                'stage_name' => 'required'
+            ]);
 
-        if($validator->fails()) {
-            throw new ValidationHttpException($validator->errors()->all());
+            if($validator->fails()) {
+                throw new ValidationHttpException($validator->errors()->all());
+            }
+
+            $artist = new Artist();
+            $artist->stage_name = $request->stage_name;
+            $artist->description = $request->description;
+
+            $userData = $request->only($signupFields);
+
+            $validator = Validator::make($userData, Config::get('boilerplate.signup_fields_rules'));
+
+            if($validator->fails()) {
+                throw new ValidationHttpException($validator->errors()->all());
+            }
+
+            User::unguard();
+            $artist->save();
+            $user = User::create($userData);
+            $artist = $artist->user()->save($user);
+            User::reguard();
+
+
+            if(!$artist->id) {
+                return $this->response->error('could_not_create_artist', 500);
+            }
+        }
+        else {
+            //Just an ordinary user
+            $userData = $request->only($signupFields);
+
+            $validator = Validator::make($userData, Config::get('boilerplate.signup_fields_rules'));
+
+            if($validator->fails()) {
+                throw new ValidationHttpException($validator->errors()->all());
+            }
+
+            User::unguard();
+            $user = User::create($userData);
+            User::reguard();
+
+            if(!$user->id) {
+                return $this->response->error('could_not_create_user', 500);
+            }
         }
 
-        User::unguard();
-        $user = User::create($userData);
-        User::reguard();
-
-        if(!$user->id) {
-            return $this->response->error('could_not_create_user', 500);
-        }
 
         if($hasToReleaseToken) {
             return $this->login($request);
         }
-        
+
         return $this->response->created();
     }
 
@@ -107,7 +147,7 @@ class AuthController extends Controller
         if($validator->fails()) {
             throw new ValidationHttpException($validator->errors()->all());
         }
-        
+
         $response = Password::reset($credentials, function ($user, $password) {
             $user->password = $password;
             $user->save();

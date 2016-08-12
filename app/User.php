@@ -33,4 +33,14 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = \Hash::make($value);
     }
+
+    /**
+     * This allows other models get an instance of this
+     *
+     * @var string
+     */
+    public function userable()
+    {
+        return $this->morphTo();
+    }
 }
