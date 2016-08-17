@@ -1,0 +1,12 @@
+{
+  "name": "Poles Music API",
+  "version": "1.0.0",
+  "description": "Documentation for the API",
+  "title": "Poles Music API Documentation",
+  "url" : "http://polesmusic.herokuapp.com/api",
+  "sampleUrl": "http://polesmusic.herokuapp.com/api",
+  "template": {
+  	"withCompare": false,
+  	"withGenerator": true
+  }
+}

@@ -23,9 +23,7 @@ class SongController extends Controller
 	    //Ensure that user is an artist
 	    if($currentUser->userable)
 	    {
-
-	    	$has = $request->hasFile('music');
-	    	if($has)
+	    	if($request->hasFile('music'))
 	    	{
 	    		$file = $request->file('music');
 
