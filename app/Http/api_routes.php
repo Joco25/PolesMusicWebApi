@@ -9,19 +9,9 @@ $api->version('v1', function ($api) {
 	$api->post('auth/recovery', 'App\Api\V1\Controllers\AuthController@recovery');
 	$api->post('auth/reset', 'App\Api\V1\Controllers\AuthController@reset');
 
-
+	//Routes that require Authentication
 	$api->group(['middleware' => 'api.auth'], function ($api) {
 		$api->post('songs/upload', 'App\Api\V1\Controllers\SongController@uploadSong');
-	});
-
-	// example of protected route
-	$api->get('protected', ['middleware' => ['api.auth'], function () {		
-		return \App\User::all();
-    }]);
-
-	// example of free route
-	$api->get('free', function() {
-		return \App\User::all();
 	});
 
 });
@@ -70,6 +60,30 @@ $api->version('v1', function ($api) {
 	 *
 	 *
 	 *@apiSuccess {String} token A token is returned. This token should be sent with every request
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     {
+			  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImlzcyI6Imh0dHA6XC9cL2xvY2FsLXdlYjo4MDgwXC9wb2xlc1wvcHVibGljXC9hcGlcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNDcxNDM0Mzg3LCJleHAiOjE0NzE1MjA3ODcsIm5iZiI6MTQ3MTQzNDM4NywianRpIjoiZTkxMTdjOGY0ZWI2YmNiMGZkMGUwNmJjYWVjNzRhNzcifQ.KB6S1h8jQU5k7xFquUZC4e3TRA3YpiQ0gfrHb_rf0rU"
+			}
+	 *
+	 *
+	 * @apiError {string} message Error message
+	 * @apiError {integer} status_code A status code to go with the error
+	 * @apiError {array} errors Array of errors
+	 *
+*/
+
+//3. Auth/recovery
+
+/**
+	 *@api {POST} /auth/recovery Account Recovery
+	 *@apiName Recovery User/Artist
+	 *@apiGroup Authentication
+	 *@apiDescription This Endpoint is responsible for account recovery. Users/Artists
+	 *@apiParam {String} email
+	 *
+	 *
+	 *@apiSuccess {String} token sends email to client [Unprocessed for now]
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     {
